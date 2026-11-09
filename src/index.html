@@ -1,0 +1,1378 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>KOSTKU! — Juragan Kost</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --green-dark: #14532d;
+        --green: #15803d;
+        --green-soft: #e7f4ec;
+        --paper: #fafaf7;
+        --card: #ffffff;
+        --ink: #1c1917;
+        --muted: #78716c;
+        --amber: #b45309;
+        --amber-soft: #fdf3e3;
+        --red: #b91c1c;
+        --red-soft: #fdecec;
+        --line: #e7e2d9;
+        --input-bg: #ffffff;
+        --chip-bg: #f3f0e9;
+        --nav-bg: #ffffff;
+        --shadow: 0 1px 3px rgba(28, 25, 23, 0.08), 0 4px 14px rgba(28, 25, 23, 0.05);
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --green-dark: #14532d;
+          --green: #4ade80;
+          --green-soft: #173324;
+          --paper: #12100e;
+          --card: #1e1b18;
+          --ink: #f5f2ec;
+          --muted: #a8a29e;
+          --amber: #f0b269;
+          --amber-soft: #3a2a12;
+          --red: #f08a8a;
+          --red-soft: #3d1a1a;
+          --line: #35302a;
+          --input-bg: #26221e;
+          --chip-bg: #2b2721;
+          --nav-bg: #1a1714;
+          --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+          color-scheme: dark;
+        }
+      }
+      html { box-sizing: border-box; }
+      *, *::before, *::after { box-sizing: inherit; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        font-variant-numeric: tabular-nums;
+      }
+      button, input, select, textarea { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      h1, h2, h3, p { margin: 0; }
+
+      .app { max-width: 480px; margin: 0 auto; padding-bottom: 92px; }
+
+      /* ===== Header ===== */
+      .site-header {
+        background: var(--green-dark);
+        color: #ffffff;
+        padding: 20px 18px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+      }
+      .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+      .kost-name { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; }
+      .kost-addr { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 13px; color: #bbf7d0; font-weight: 500; }
+      .kost-addr svg { flex: none; }
+      .btn-edit-kost {
+        flex: none; display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 999px; padding: 7px 12px; font-size: 12.5px; font-weight: 600;
+      }
+      .btn-edit-kost:active { background: rgba(255,255,255,0.22); }
+      .month-nav {
+        margin-top: 16px; display: flex; align-items: center; justify-content: space-between;
+        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.16);
+        border-radius: 12px; padding: 6px;
+      }
+      .month-btn {
+        width: 38px; height: 38px; border: none; border-radius: 9px;
+        background: rgba(255,255,255,0.14); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .month-btn:active { background: rgba(255,255,255,0.28); }
+      .month-label { font-size: 16px; font-weight: 700; text-align: center; }
+      .month-sub { display: block; font-size: 11px; font-weight: 500; color: #bbf7d0; margin-top: 1px; }
+
+      .sample-note {
+        display: none; margin: 12px 16px 0; padding: 9px 12px;
+        background: var(--amber-soft); color: var(--amber);
+        border: 1px solid var(--amber); border-radius: 10px;
+        font-size: 12.5px; font-weight: 600; text-align: center;
+      }
+      .sample-note.show { display: block; }
+
+      /* ===== Dashboard ===== */
+      .dashboard { padding: 16px 16px 4px; }
+      .income-card {
+        background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+        box-shadow: var(--shadow); padding: 18px;
+        display: flex; align-items: center; gap: 16px;
+      }
+      .income-main { flex: 1; min-width: 0; }
+      .income-label { font-size: 12.5px; font-weight: 600; color: var(--muted); letter-spacing: 0.02em; }
+      .income-value { font-size: 31px; font-weight: 800; letter-spacing: -0.02em; margin-top: 3px; line-height: 1.1; }
+      .income-sub { font-size: 12.5px; color: var(--muted); margin-top: 5px; font-weight: 500; }
+      .ring-wrap { flex: none; text-align: center; }
+      .ring-svg { display: block; }
+      .ring-bg { stroke: var(--line); }
+      .ring-fg { stroke: var(--green); transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+      .ring-text { font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 5px; max-width: 92px; line-height: 1.35; }
+
+      .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+      .stat-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; box-shadow: var(--shadow); }
+      .stat-label { font-size: 12px; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+      .stat-value { font-size: 20px; font-weight: 800; margin-top: 4px; letter-spacing: -0.01em; }
+      .stat-value.red { color: var(--red); }
+      .stat-value.green { color: var(--green); }
+
+      .chart-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 16px 14px 12px; margin-top: 12px; }
+      .chart-title { font-size: 14px; font-weight: 700; }
+      .chart-sub { font-size: 12px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+      .chart { display: flex; align-items: flex-end; gap: 6px; height: 148px; margin-top: 14px; padding: 0 2px; }
+      .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+      .bar-val { font-size: 9.5px; font-weight: 700; color: var(--ink); white-space: nowrap; margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; line-height: 1.3; }
+      .bar-val .bv-rp { font-size: 8.5px; font-weight: 600; color: var(--muted); }
+      .bar { width: 100%; max-width: 40px; border-radius: 6px 6px 3px 3px; background: #86c79b; min-height: 3px; transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+      @media (prefers-color-scheme: dark) { .bar { background: #2f6b45; } }
+      .bar.active { background: var(--green-dark); }
+      @media (prefers-color-scheme: dark) { .bar.active { background: var(--green); } }
+      .bar-month { font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 7px; }
+      .bar-month.active { color: var(--ink); font-weight: 800; }
+
+      /* ===== Sections / tabs ===== */
+      .tab-panel { padding: 18px 16px 8px; display: none; }
+      .tab-panel.active { display: block; }
+      .section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+      .section-title { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+      .section-sub { font-size: 12.5px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+      .btn-primary {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: var(--green-dark); color: #fff; border: none;
+        border-radius: 11px; padding: 10px 15px; font-size: 13.5px; font-weight: 700;
+        box-shadow: var(--shadow);
+      }
+      .btn-primary:active { transform: scale(0.98); }
+      .btn-ghost {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--card); color: var(--ink); border: 1px solid var(--line);
+        border-radius: 10px; padding: 8px 12px; font-size: 12.5px; font-weight: 600;
+      }
+      .btn-danger-ghost {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--card); color: var(--red); border: 1px solid var(--line);
+        border-radius: 10px; padding: 8px 12px; font-size: 12.5px; font-weight: 600;
+      }
+
+      /* ===== Room cards ===== */
+      .room-list { display: flex; flex-direction: column; gap: 12px; }
+      .room-card {
+        position: relative; overflow: hidden;
+        background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+        box-shadow: var(--shadow); padding: 16px;
+      }
+      .room-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+      .room-number { font-size: 21px; font-weight: 800; letter-spacing: -0.01em; }
+      .room-price { font-size: 14px; font-weight: 700; color: var(--green-dark); margin-top: 2px; }
+      @media (prefers-color-scheme: dark) { .room-price { color: var(--green); } }
+      .room-price span { font-weight: 500; color: var(--muted); font-size: 12px; }
+      .badge {
+        flex: none; font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 999px; white-space: nowrap;
+      }
+      .badge-lunas { background: var(--green-soft); color: var(--green); }
+      .badge-menunggu { background: var(--chip-bg); color: var(--muted); }
+      .badge-hariini { background: var(--amber-soft); color: var(--amber); }
+      .badge-terlambat { background: var(--red-soft); color: var(--red); }
+      .badge-kosong { background: var(--chip-bg); color: var(--muted); }
+      .facility-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+      .chip {
+        font-size: 11px; font-weight: 600; background: var(--chip-bg); color: var(--ink);
+        border-radius: 999px; padding: 4px 9px;
+      }
+      .tenant-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13.5px; font-weight: 600; }
+      .tenant-row svg { color: var(--muted); flex: none; }
+      .tenant-row .wa { color: var(--muted); font-weight: 500; font-size: 12.5px; }
+      .tenant-empty { color: var(--muted); font-weight: 500; font-size: 13px; }
+      .due-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12.5px; color: var(--muted); font-weight: 500; }
+      .due-row svg { flex: none; }
+      .room-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; padding-top: 13px; border-top: 1px dashed var(--line); }
+      .btn-pay {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--green); color: #fff; border: none; border-radius: 9px;
+        padding: 8px 13px; font-size: 12.5px; font-weight: 700;
+      }
+      @media (prefers-color-scheme: dark) { .btn-pay { color: #0c1a10; } }
+      .btn-pay:active { transform: scale(0.97); }
+      .btn-small {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: transparent; color: var(--ink); border: 1px solid var(--line);
+        border-radius: 9px; padding: 8px 11px; font-size: 12.5px; font-weight: 600;
+      }
+      .btn-small.danger { color: var(--red); }
+
+      .stamp {
+        position: absolute; top: 38px; right: 24px; z-index: 3;
+        color: var(--green); border: 3px double var(--green); border-radius: 8px;
+        font-size: 21px; font-weight: 800; letter-spacing: 0.14em;
+        padding: 4px 14px 5px; transform: rotate(-8deg);
+        background: color-mix(in srgb, var(--card) 82%, transparent);
+        pointer-events: none; text-transform: uppercase;
+      }
+      .stamp.animate { animation: stampIn 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+      @keyframes stampIn {
+        0% { transform: rotate(-8deg) scale(2.4); opacity: 0; }
+        60% { opacity: 1; }
+        100% { transform: rotate(-8deg) scale(1); opacity: 1; }
+      }
+
+      /* ===== Lists (pembayaran & pengeluaran) ===== */
+      .list-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+      .list-row { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border-bottom: 1px solid var(--line); }
+      .list-row:last-child { border-bottom: none; }
+      .list-main { flex: 1; min-width: 0; }
+      .list-title { font-size: 14px; font-weight: 700; }
+      .list-sub { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; line-height: 1.45; }
+      .list-amount { font-size: 14.5px; font-weight: 800; white-space: nowrap; }
+      .list-amount.out { color: var(--red); }
+      .method-tag { font-size: 10.5px; font-weight: 700; background: var(--green-soft); color: var(--green); border-radius: 999px; padding: 3px 8px; white-space: nowrap; }
+      .icon-btn {
+        flex: none; width: 34px; height: 34px; border: 1px solid var(--line); background: var(--card);
+        border-radius: 9px; display: flex; align-items: center; justify-content: center; color: var(--red);
+      }
+      .total-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 12px; padding: 13px 15px;
+        background: var(--green-dark); color: #fff; border-radius: 12px;
+      }
+      .total-bar .t-label { font-size: 13px; font-weight: 600; color: #bbf7d0; }
+      .total-bar .t-value { font-size: 17px; font-weight: 800; }
+      .net-line { margin-top: 10px; font-size: 13.5px; font-weight: 600; text-align: center; color: var(--muted); }
+      .net-line strong { color: var(--green); font-size: 15px; }
+      @media (prefers-color-scheme: dark) { .net-line strong { color: var(--green); } }
+
+      .filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+      .filter-row label { font-size: 13px; font-weight: 600; color: var(--muted); }
+      .select {
+        flex: 1; appearance: none; background: var(--input-bg); border: 1px solid var(--line);
+        border-radius: 10px; padding: 9px 12px; font-size: 13.5px; font-weight: 600;
+      }
+
+      .empty-state {
+        text-align: center; padding: 34px 22px; background: var(--card);
+        border: 1px dashed var(--line); border-radius: 14px;
+      }
+      .empty-state .e-title { font-size: 15px; font-weight: 700; }
+      .empty-state .e-sub { font-size: 13px; color: var(--muted); margin-top: 5px; line-height: 1.5; font-weight: 500; }
+
+      /* ===== Forms ===== */
+      .form-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 16px; margin-bottom: 14px; }
+      .form-title { font-size: 15px; font-weight: 800; margin-bottom: 12px; }
+      .field { margin-bottom: 11px; }
+      .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+      .field input[type="text"], .field input[type="number"], .field input[type="tel"], .field input[type="date"], .field select {
+        width: 100%; background: var(--input-bg); border: 1px solid var(--line); border-radius: 10px;
+        padding: 10px 12px; font-size: 14px; font-weight: 500;
+      }
+      .field input:focus, .field select:focus { outline: 2px solid var(--green); outline-offset: 0; border-color: transparent; }
+      .field .hint { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+      .field .err { font-size: 12px; color: var(--red); margin-top: 4px; font-weight: 600; display: none; }
+      .field.invalid input { border-color: var(--red); }
+      .field.invalid .err { display: block; }
+      .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .check-item {
+        display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;
+        background: var(--input-bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; cursor: pointer;
+      }
+      .check-item input { width: 17px; height: 17px; accent-color: var(--green-dark); flex: none; }
+      .form-submit { width: 100%; justify-content: center; margin-top: 4px; padding: 12px; font-size: 14px; }
+
+      /* ===== Pengingat ===== */
+      .remind-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 15px; margin-bottom: 12px; }
+      .remind-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .remind-name { font-size: 15px; font-weight: 800; }
+      .remind-room { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+      .remind-msg {
+        margin-top: 11px; background: var(--chip-bg); border-radius: 10px; padding: 11px 12px;
+        font-size: 13px; line-height: 1.55; font-weight: 500;
+      }
+      .remind-actions { display: flex; gap: 8px; margin-top: 12px; }
+      .remind-actions .btn-small, .remind-actions .btn-wa { flex: 1; justify-content: center; padding: 10px; }
+      .btn-wa {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--green-dark); color: #fff; border: none; border-radius: 9px;
+        padding: 8px 11px; font-size: 12.5px; font-weight: 700; text-decoration: none;
+      }
+
+      .settings-card { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 16px; }
+      .settings-title { font-size: 15px; font-weight: 800; }
+      .settings-sub { font-size: 12.5px; color: var(--muted); font-weight: 500; margin-top: 3px; line-height: 1.5; }
+      .settings-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 13px; }
+      .settings-actions button { justify-content: center; padding: 11px; }
+
+      /* ===== Bottom nav ===== */
+      .bottom-nav {
+        position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; z-index: 50;
+        width: 100%; max-width: 480px;
+        background: var(--nav-bg); border-top: 1px solid var(--line);
+        display: grid; grid-template-columns: repeat(4, 1fr);
+        padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+      }
+      .nav-item {
+        border: none; background: transparent; color: var(--muted);
+        display: flex; flex-direction: column; align-items: center; gap: 3px;
+        font-size: 11px; font-weight: 600; padding: 5px 2px; border-radius: 10px;
+      }
+      .nav-item.active { color: var(--green-dark); }
+      @media (prefers-color-scheme: dark) { .nav-item.active { color: var(--green); } }
+      .nav-item.active .nav-dot { opacity: 1; }
+      .nav-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: 0; }
+
+      /* ===== Modal ===== */
+      .modal-overlay {
+        position: fixed; inset: 0; z-index: 80; background: rgba(12, 10, 8, 0.55);
+        display: none; align-items: flex-end; justify-content: center;
+      }
+      .modal-overlay.open { display: flex; }
+      .modal-sheet {
+        width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto;
+        background: var(--card); border-radius: 20px 20px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+        animation: sheetUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      @keyframes sheetUp { from { transform: translateY(36px); opacity: 0.4; } to { transform: translateY(0); opacity: 1; } }
+      .modal-title { font-size: 17px; font-weight: 800; }
+      .modal-sub { font-size: 13px; color: var(--muted); font-weight: 500; margin-top: 3px; line-height: 1.5; }
+      .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+      .modal-actions button { flex: 1; justify-content: center; padding: 12px; }
+      .method-list { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+      .method-btn {
+        display: flex; align-items: center; gap: 11px; text-align: left;
+        background: var(--input-bg); border: 1.5px solid var(--line); border-radius: 12px;
+        padding: 13px 14px; font-size: 14.5px; font-weight: 700;
+      }
+      .method-btn:active { border-color: var(--green); background: var(--green-soft); }
+      .method-btn svg { color: var(--green-dark); }
+      @media (prefers-color-scheme: dark) { .method-btn svg { color: var(--green); } }
+
+      /* ===== Toast ===== */
+      .toast {
+        position: fixed; left: 50%; bottom: 96px; z-index: 90;
+        transform: translate(-50%, 16px); opacity: 0; pointer-events: none;
+        background: var(--ink); color: var(--paper);
+        font-size: 13px; font-weight: 600; padding: 11px 16px; border-radius: 999px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.28); max-width: calc(100vw - 40px); text-align: center;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+      }
+      .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+      #confetti-canvas { position: fixed; inset: 0; z-index: 100; pointer-events: none; display: none; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .stamp.animate, .modal-sheet { animation: none; }
+        .ring-fg, .bar { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="site-header">
+        <div class="header-top">
+          <div>
+            <h1 class="kost-name" id="kostName">Kost Mawar</h1>
+            <p class="kost-addr">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="kostAddr">Batam</span>
+            </p>
+          </div>
+          <button class="btn-edit-kost" id="btnEditKost" type="button">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+            Edit
+          </button>
+        </div>
+        <div class="month-nav">
+          <button class="month-btn" id="btnPrevMonth" type="button" aria-label="Bulan sebelumnya">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="month-label"><span id="monthLabel">November 2026</span><span class="month-sub" id="monthSub"></span></div>
+          <button class="month-btn" id="btnNextMonth" type="button" aria-label="Bulan berikutnya">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <p class="sample-note" id="sampleNote">Data contoh — silakan ganti dengan data kost Anda</p>
+
+      <section class="dashboard" aria-label="Ringkasan">
+        <div class="income-card">
+          <div class="income-main">
+            <p class="income-label">PEMASUKAN BULAN INI</p>
+            <p class="income-value" id="incomeValue">Rp 0</p>
+            <p class="income-sub" id="incomeSub">dari pembayaran yang sudah lunas</p>
+          </div>
+          <div class="ring-wrap">
+            <svg class="ring-svg" width="84" height="84" viewBox="0 0 84 84" aria-hidden="true">
+              <circle class="ring-bg" cx="42" cy="42" r="35" fill="none" stroke-width="9" />
+              <circle class="ring-fg" id="ringFg" cx="42" cy="42" r="35" fill="none" stroke-width="9" stroke-linecap="round" stroke-dasharray="219.9" stroke-dashoffset="219.9" transform="rotate(-90 42 42)" />
+            </svg>
+            <p class="ring-text" id="ringText">0 dari 0 kamar sudah lunas</p>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <p class="stat-label">Kamar Terisi</p>
+            <p class="stat-value" id="statTerisi">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Kamar Kosong</p>
+            <p class="stat-value" id="statKosong">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Tunggakan</p>
+            <p class="stat-value red" id="statTunggakan">Rp 0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-label">Pemasukan Bersih</p>
+            <p class="stat-value green" id="statBersih">Rp 0</p>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h2 class="chart-title">Pemasukan 6 bulan</h2>
+          <p class="chart-sub">Total pembayaran lunas per bulan</p>
+          <div class="chart" id="chart"></div>
+        </div>
+      </section>
+
+      <!-- TAB: KAMAR -->
+      <section class="tab-panel" id="panel-kamar">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Daftar Kamar</h2>
+            <p class="section-sub" id="roomCountSub"></p>
+          </div>
+          <button class="btn-primary" id="btnAddRoom" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Tambah Kamar
+          </button>
+        </div>
+        <div class="room-list" id="roomList"></div>
+      </section>
+
+      <!-- TAB: PEMBAYARAN -->
+      <section class="tab-panel" id="panel-pembayaran">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Riwayat Pembayaran</h2>
+            <p class="section-sub">Semua pembayaran yang tercatat lunas</p>
+          </div>
+        </div>
+        <div class="filter-row">
+          <label for="payFilter">Bulan</label>
+          <select class="select" id="payFilter"></select>
+        </div>
+        <div id="payListWrap"></div>
+        <div class="total-bar" id="payTotalBar">
+          <span class="t-label" id="payTotalLabel">Total</span>
+          <span class="t-value" id="payTotalValue">Rp 0</span>
+        </div>
+      </section>
+
+      <!-- TAB: PENGELUARAN -->
+      <section class="tab-panel" id="panel-pengeluaran">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Pengeluaran</h2>
+            <p class="section-sub" id="expMonthSub"></p>
+          </div>
+        </div>
+        <form class="form-card" id="expForm" novalidate>
+          <h3 class="form-title">Tambah Pengeluaran</h3>
+          <div class="field-row">
+            <div class="field">
+              <label for="expDate">Tanggal</label>
+              <input type="date" id="expDate" required />
+            </div>
+            <div class="field">
+              <label for="expCategory">Kategori</label>
+              <select id="expCategory">
+                <option>Listrik</option>
+                <option>Air</option>
+                <option>WiFi</option>
+                <option>Perbaikan</option>
+                <option>Lainnya</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="expNote">Keterangan</label>
+            <input type="text" id="expNote" placeholder="cth: Token listrik" maxlength="80" />
+            <p class="err" id="expNoteErr">Keterangan wajib diisi.</p>
+          </div>
+          <div class="field">
+            <label for="expAmount">Jumlah (Rp)</label>
+            <input type="number" id="expAmount" inputmode="numeric" min="1" placeholder="cth: 250000" />
+            <p class="err" id="expAmountErr">Jumlah harus lebih dari 0.</p>
+          </div>
+          <button class="btn-primary form-submit" type="submit">Simpan Pengeluaran</button>
+        </form>
+        <div id="expListWrap"></div>
+        <div class="total-bar">
+          <span class="t-label" id="expTotalLabel">Total pengeluaran</span>
+          <span class="t-value" id="expTotalValue">Rp 0</span>
+        </div>
+        <p class="net-line" id="netLine"></p>
+      </section>
+
+      <!-- TAB: PENGINGAT -->
+      <section class="tab-panel" id="panel-pengingat">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Pengingat Tagihan</h2>
+            <p class="section-sub" id="remindSub"></p>
+          </div>
+        </div>
+        <div id="remindList"></div>
+
+        <div class="settings-card">
+          <h3 class="settings-title">Pengaturan Data</h3>
+          <p class="settings-sub">Semua data tersimpan otomatis di perangkat ini. Muat data contoh untuk melihat contoh pengelolaan, atau mulai dari nol untuk memakai data kost Anda sendiri.</p>
+          <div class="settings-actions">
+            <button class="btn-ghost" id="btnLoadSample" type="button">Muat data contoh</button>
+            <button class="btn-danger-ghost" id="btnReset" type="button">Mulai dari nol</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <button class="nav-item" type="button" data-tab="kamar">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M2 17h20"/></svg>
+        Kamar
+        <span class="nav-dot"></span>
+      </button>
+      <button class="nav-item" type="button" data-tab="pembayaran">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+        Pembayaran
+        <span class="nav-dot"></span>
+      </button>
+      <button class="nav-item" type="button" data-tab="pengeluaran">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+        Pengeluaran
+        <span class="nav-dot"></span>
+      </button>
+      <button class="nav-item" type="button" data-tab="pengingat">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        Pengingat
+        <span class="nav-dot"></span>
+      </button>
+    </nav>
+
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-sheet" id="modalSheet" role="dialog" aria-modal="true"></div>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+    <canvas id="confetti-canvas"></canvas>
+
+    <script>
+      "use strict";
+      /* ================= Konstanta & util ================= */
+      var LS_KEY = "kostku-v1";
+      var MONTH_NAMES = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+      var MONTH_SHORT = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+      var ALL_FACILITIES = ["AC","WiFi","Kamar mandi dalam","Kamar mandi luar","Kasur","Lemari","Kipas","TV"];
+      var METHODS = ["Tunai","Transfer","QRIS"];
+      var CIRC = 219.9;
+
+      function pad2(n) { return (n < 10 ? "0" : "") + n; }
+      function monthKey(y, m) { return y + "-" + pad2(m + 1); }
+      function fmtRp(n) {
+        var neg = n < 0;
+        var s = Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        return (neg ? "-Rp " : "Rp ") + s;
+      }
+      function fmtDateID(iso) {
+        if (!iso) return "-";
+        var p = iso.split("-");
+        return parseInt(p[2], 10) + " " + MONTH_SHORT[parseInt(p[1], 10) - 1] + " " + p[0];
+      }
+      function todayLocal() {
+        var d = new Date();
+        return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() };
+      }
+      function todayISO() {
+        var t = todayLocal();
+        return t.y + "-" + pad2(t.m + 1) + "-" + pad2(t.d);
+      }
+      function esc(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      }
+      function uid() { return "id" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+      function firstName(name) { return String(name || "").trim().split(/\s+/)[0] || ""; }
+
+      /* ================= Data contoh ================= */
+      function sampleData() {
+        var rooms = [
+          { id: "k01", number: "01", price: 1600000, facilities: ["AC","WiFi","Kamar mandi dalam","Kasur","Lemari"], dueDay: 5,  tenant: { name: "Rina Maharani", wa: "628111111101" } },
+          { id: "k02", number: "02", price: 1200000, facilities: ["AC","WiFi","Kamar mandi dalam"], dueDay: 1,  tenant: { name: "Budi Santoso", wa: "628111111102" } },
+          { id: "k03", number: "03", price: 900000,  facilities: ["WiFi","Kamar mandi dalam","Kipas"], dueDay: 10, tenant: { name: "Sari Dewi", wa: "628111111103" } },
+          { id: "k04", number: "04", price: 750000,  facilities: ["WiFi","Kamar mandi luar"], dueDay: 3,  tenant: { name: "Andi Pratama", wa: "628111111104" } },
+          { id: "k05", number: "05", price: 1400000, facilities: ["AC","WiFi","Kamar mandi dalam"], dueDay: 7,  tenant: { name: "Dewi Lestari", wa: "628111111105" } },
+          { id: "k06", number: "06", price: 600000,  facilities: ["Kipas","Kamar mandi luar"], dueDay: 1,  tenant: { name: "Joko Susilo", wa: "628111111106" } },
+          { id: "k07", number: "07", price: 1100000, facilities: ["AC","WiFi"], dueDay: 15, tenant: { name: "Maya Putri", wa: "628111111107" } },
+          { id: "k08", number: "08", price: 850000,  facilities: ["WiFi","Kamar mandi dalam"], dueDay: 10, tenant: { name: "Rizky Ramadhan", wa: "628111111108" } },
+          { id: "k09", number: "09", price: 950000,  facilities: ["AC","WiFi","Kamar mandi dalam"], dueDay: 5,  tenant: null },
+          { id: "k10", number: "10", price: 1300000, facilities: ["AC","WiFi","Kamar mandi dalam","TV"], dueDay: 8, tenant: { name: "Agus Wijaya", wa: "628111111110" } }
+        ];
+        var payments = [];
+        var methodCycle = ["Transfer","QRIS","Tunai"];
+        // Riwayat Jul–Okt 2026: semua kamar terisi lunas, kecuali Agu (K06) & Okt (K04)
+        [6, 7, 8, 9].forEach(function (mIdx) {
+          rooms.forEach(function (r, ri) {
+            if (!r.tenant) return;
+            if (mIdx === 7 && r.id === "k06") return;
+            if (mIdx === 9 && r.id === "k04") return;
+            payments.push({
+              id: "pay-h-" + mIdx + "-" + r.id,
+              roomId: r.id, month: monthKey(2026, mIdx),
+              amount: r.price, payDate: "2026-" + pad2(mIdx + 1) + "-" + pad2(r.dueDay),
+              method: methodCycle[(ri + mIdx) % 3]
+            });
+          });
+        });
+        // November 2026 sesuai brief
+        var nov = [
+          ["k01", "2026-11-05", "Transfer"], ["k02", "2026-11-01", "QRIS"],
+          ["k05", "2026-11-07", "Tunai"], ["k08", "2026-11-09", "Transfer"],
+          ["k10", "2026-11-08", "QRIS"]
+        ];
+        nov.forEach(function (n) {
+          var r = rooms.filter(function (x) { return x.id === n[0]; })[0];
+          payments.push({ id: "pay-nov-" + n[0], roomId: n[0], month: "2026-11", amount: r.price, payDate: n[1], method: n[2] });
+        });
+        var expenses = [
+          { id: "e01", date: "2026-11-03", category: "Listrik", note: "Token listrik", amount: 850000 },
+          { id: "e02", date: "2026-11-04", category: "Air", note: "PDAM", amount: 320000 },
+          { id: "e03", date: "2026-11-01", category: "WiFi", note: "Internet bulanan", amount: 250000 },
+          { id: "e04", date: "2026-11-06", category: "Perbaikan", note: "Perbaiki atap bocor Kamar 04", amount: 450000 }
+        ];
+        return { kostName: "Kost Mawar", address: "Batam", isSample: true, rooms: rooms, payments: payments, expenses: expenses };
+      }
+      function emptyData() {
+        return { kostName: "Kost Mawar", address: "Batam", isSample: false, rooms: [], payments: [], expenses: [] };
+      }
+
+      /* ================= State ================= */
+      var state = null;
+      function save() {
+        try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) { /* penyimpanan tidak tersedia */ }
+      }
+      function load() {
+        try {
+          var raw = localStorage.getItem(LS_KEY);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.rooms) && Array.isArray(parsed.payments) && Array.isArray(parsed.expenses)) {
+              state = parsed;
+              return;
+            }
+          }
+        } catch (e) { /* abaikan, pakai data contoh */ }
+        state = sampleData();
+        save();
+      }
+
+      var view = { y: 2026, m: 10, tab: "kamar", payFilter: "2026-11" };
+      var lastStampRoomId = null;
+      var confettiDoneFor = {};
+      var displayedIncome = 0;
+
+      /* ================= Query data ================= */
+      function roomById(id) {
+        for (var i = 0; i < state.rooms.length; i++) if (state.rooms[i].id === id) return state.rooms[i];
+        return null;
+      }
+      function paymentFor(roomId, mk) {
+        for (var i = 0; i < state.payments.length; i++) {
+          var p = state.payments[i];
+          if (p.roomId === roomId && p.month === mk) return p;
+        }
+        return null;
+      }
+      function paymentsInMonth(mk) { return state.payments.filter(function (p) { return p.month === mk; }); }
+      function expensesInMonth(mk) {
+        return state.expenses.filter(function (e) { return e.date.slice(0, 7) === mk; })
+          .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+      }
+      function incomeOfMonth(mk) {
+        return paymentsInMonth(mk).reduce(function (s, p) { return s + p.amount; }, 0);
+      }
+      function expenseOfMonth(mk) {
+        return expensesInMonth(mk).reduce(function (s, e) { return s + e.amount; }, 0);
+      }
+      function occupiedRooms() { return state.rooms.filter(function (r) { return !!r.tenant; }); }
+
+      function roomStatus(room, y, m) {
+        if (!room.tenant) return { key: "kosong", label: "Kosong" };
+        if (paymentFor(room.id, monthKey(y, m))) return { key: "lunas", label: "Lunas" };
+        var t = todayLocal();
+        var viewIdx = y * 12 + m, todayIdx = t.y * 12 + t.m;
+        if (viewIdx > todayIdx) return { key: "menunggu", label: "Menunggu" };
+        var refDay;
+        if (viewIdx < todayIdx) {
+          refDay = new Date(y, m + 1, 0).getDate(); // akhir bulan yang dilihat
+        } else {
+          refDay = t.d;
+        }
+        var diff = refDay - room.dueDay;
+        if (diff === 0) return { key: "hariini", label: "Jatuh tempo hari ini" };
+        if (diff > 0) return { key: "terlambat", label: "Terlambat " + diff + " hari" };
+        return { key: "menunggu", label: "Menunggu" };
+      }
+
+      function reminderMessage(room, y, m) {
+        return "Halo Kak " + firstName(room.tenant.name) + ", ini dari " + state.kostName +
+          ". Kos Kamar " + room.number + " bulan " + MONTH_NAMES[m] + " " + y +
+          " sebesar " + fmtRp(room.price) + " jatuh tempo tanggal " + room.dueDay +
+          ". Mohon dibayarkan ya, terima kasih!";
+      }
+
+      /* ================= Toast ================= */
+      var toastTimer = null;
+      function toast(msg) {
+        var el = document.getElementById("toast");
+        el.textContent = msg;
+        el.classList.add("show");
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { el.classList.remove("show"); }, 2600);
+      }
+
+      /* ================= Modal ================= */
+      var overlay = document.getElementById("modalOverlay");
+      var sheet = document.getElementById("modalSheet");
+      function openModal(html) { sheet.innerHTML = html; overlay.classList.add("open"); }
+      function closeModal() { overlay.classList.remove("open"); sheet.innerHTML = ""; }
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+
+      function confirmModal(title, body, okLabel, onOk) {
+        openModal(
+          '<h3 class="modal-title">' + esc(title) + '</h3>' +
+          '<p class="modal-sub">' + esc(body) + '</p>' +
+          '<div class="modal-actions">' +
+            '<button class="btn-ghost" type="button" id="mCancel">Batal</button>' +
+            '<button class="btn-primary" type="button" id="mOk" style="background:var(--red)">' + esc(okLabel) + '</button>' +
+          '</div>'
+        );
+        document.getElementById("mCancel").addEventListener("click", closeModal);
+        document.getElementById("mOk").addEventListener("click", function () { closeModal(); onOk(); });
+      }
+
+      /* ================= Confetti ================= */
+      function fireConfetti() {
+        var canvas = document.getElementById("confetti-canvas");
+        var ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        canvas.style.display = "block";
+        var colors = ["#14532d", "#15803d", "#22c55e", "#b45309", "#f59e0b", "#fafaf7"];
+        var parts = [];
+        for (var i = 0; i < 160; i++) {
+          parts.push({
+            x: canvas.width / 2 + (Math.random() - 0.5) * canvas.width * 0.5,
+            y: canvas.height * 0.28,
+            vx: (Math.random() - 0.5) * 13,
+            vy: -(Math.random() * 11 + 5),
+            w: Math.random() * 7 + 4, h: Math.random() * 4 + 3,
+            rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3,
+            color: colors[i % colors.length]
+          });
+        }
+        var start = null;
+        function frame(ts) {
+          if (!start) start = ts;
+          var elapsed = ts - start;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          parts.forEach(function (p) {
+            p.x += p.vx; p.y += p.vy; p.vy += 0.32; p.vx *= 0.99; p.rot += p.vr;
+            ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+            ctx.globalAlpha = Math.max(0, 1 - elapsed / 2400);
+            ctx.fillStyle = p.color; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          });
+          if (elapsed < 2500) requestAnimationFrame(frame);
+          else { ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.display = "none"; }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      /* ================= Count-up ================= */
+      var countAnim = null;
+      function countUp(el, target) {
+        var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) { el.textContent = fmtRp(target); displayedIncome = target; return; }
+        var from = displayedIncome, start = null, dur = 650;
+        if (countAnim) cancelAnimationFrame(countAnim);
+        function step(ts) {
+          if (!start) start = ts;
+          var p = Math.min(1, (ts - start) / dur);
+          var eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = fmtRp(Math.round(from + (target - from) * eased));
+          if (p < 1) countAnim = requestAnimationFrame(step);
+          else displayedIncome = target;
+        }
+        countAnim = requestAnimationFrame(step);
+      }
+    </script>
+    <script>
+      "use strict";
+      /* ================= Render: header & dashboard ================= */
+      function renderHeader() {
+        document.getElementById("kostName").textContent = state.kostName;
+        document.getElementById("kostAddr").textContent = state.address;
+        document.getElementById("monthLabel").textContent = MONTH_NAMES[view.m] + " " + view.y;
+        var t = todayLocal();
+        var isCurrent = view.y === t.y && view.m === t.m;
+        document.getElementById("monthSub").textContent = isCurrent ? "Bulan berjalan" : "Ketuk panah untuk pindah bulan";
+        document.getElementById("sampleNote").classList.toggle("show", !!state.isSample);
+      }
+
+      function renderDashboard() {
+        var mk = monthKey(view.y, view.m);
+        var income = incomeOfMonth(mk);
+        var expense = expenseOfMonth(mk);
+        var occ = occupiedRooms();
+        var paidCount = occ.filter(function (r) { return !!paymentFor(r.id, mk); }).length;
+        var tunggakan = occ.filter(function (r) { return !paymentFor(r.id, mk); })
+          .reduce(function (s, r) { return s + r.price; }, 0);
+
+        countUp(document.getElementById("incomeValue"), income);
+        document.getElementById("incomeSub").textContent =
+          "dari " + paidCount + " pembayaran lunas di " + MONTH_NAMES[view.m] + " " + view.y;
+
+        var frac = occ.length ? paidCount / occ.length : 0;
+        document.getElementById("ringFg").style.strokeDashoffset = String(CIRC * (1 - frac));
+        document.getElementById("ringText").textContent = occ.length
+          ? paidCount + " dari " + occ.length + " kamar terisi sudah lunas"
+          : "Belum ada kamar terisi";
+
+        document.getElementById("statTerisi").textContent = occ.length + " kamar";
+        document.getElementById("statKosong").textContent = (state.rooms.length - occ.length) + " kamar";
+        document.getElementById("statTunggakan").textContent = fmtRp(tunggakan);
+        document.getElementById("statBersih").textContent = fmtRp(income - expense);
+
+        // Grafik 6 bulan: Jul–Des 2026 untuk bulan terpilih Nov 2026
+        // (4 bulan sebelum, bulan terpilih, 1 bulan sesudah)
+        var max = 0, bars = [];
+        for (var i = 4; i >= -1; i--) {
+          var d = new Date(view.y, view.m - i, 1);
+          var bmk = monthKey(d.getFullYear(), d.getMonth());
+          var val = incomeOfMonth(bmk);
+          if (val > max) max = val;
+          bars.push({ label: MONTH_SHORT[d.getMonth()], val: val, active: bmk === mk });
+        }
+        document.getElementById("chart").innerHTML = bars.map(function (b) {
+          var h = max > 0 ? Math.max(3, Math.round(b.val / max * 96)) : 3;
+          return '<div class="bar-col">' +
+            '<span class="bar-val"><span class="bv-rp">Rp</span>' + (b.val > 0 ? fmtRp(b.val).slice(3) : "0") + '</span>' +
+            '<div class="bar' + (b.active ? " active" : "") + '" style="height:' + h + 'px"></div>' +
+            '<span class="bar-month' + (b.active ? " active" : "") + '">' + b.label + '</span></div>';
+        }).join("");
+      }
+
+      /* ================= Render: kamar ================= */
+      var ICON_USER = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+      var ICON_CAL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+      var ICON_CHECK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
+      function renderRooms() {
+        var mk = monthKey(view.y, view.m);
+        var wrap = document.getElementById("roomList");
+        document.getElementById("roomCountSub").textContent =
+          state.rooms.length + " kamar · status untuk " + MONTH_NAMES[view.m] + " " + view.y;
+        if (!state.rooms.length) {
+          wrap.innerHTML = '<div class="empty-state"><p class="e-title">Belum ada kamar</p>' +
+            '<p class="e-sub">Ketuk tombol "Tambah Kamar" untuk menambahkan kamar pertama Anda.</p></div>';
+          return;
+        }
+        wrap.innerHTML = state.rooms.map(function (r) {
+          var st = roomStatus(r, view.y, view.m);
+          var chips = r.facilities.map(function (f) { return '<span class="chip">' + esc(f) + '</span>'; }).join("");
+          var tenantHtml = r.tenant
+            ? '<div class="tenant-row">' + ICON_USER + '<span>' + esc(r.tenant.name) + '</span><span class="wa">WA ' + esc(r.tenant.wa) + '</span></div>'
+            : '<div class="tenant-row">' + ICON_USER + '<span class="tenant-empty">Belum ada penghuni</span></div>';
+          var actions = "";
+          if (r.tenant && st.key !== "lunas") {
+            actions += '<button class="btn-pay" type="button" data-act="pay" data-id="' + r.id + '">' + ICON_CHECK + 'Tandai Lunas</button>';
+          }
+          if (r.tenant && st.key === "lunas") {
+            actions += '<button class="btn-small" type="button" data-act="unpay" data-id="' + r.id + '">Batalkan Lunas</button>';
+          }
+          if (!r.tenant) {
+            actions += '<button class="btn-pay" type="button" data-act="fill" data-id="' + r.id + '">Isi Penghuni</button>';
+          } else {
+            actions += '<button class="btn-small" type="button" data-act="vacate" data-id="' + r.id + '">Kosongkan</button>';
+          }
+          actions += '<button class="btn-small" type="button" data-act="edit" data-id="' + r.id + '">Edit</button>';
+          if (!r.tenant) {
+            actions += '<button class="btn-small danger" type="button" data-act="del" data-id="' + r.id + '">Hapus</button>';
+          }
+          var stamp = st.key === "lunas"
+            ? '<div class="stamp' + (lastStampRoomId === r.id ? " animate" : "") + '">Lunas</div>' : "";
+          return '<article class="room-card">' + stamp +
+            '<div class="room-top"><div>' +
+              '<h3 class="room-number">Kamar ' + esc(r.number) + '</h3>' +
+              '<p class="room-price">' + fmtRp(r.price) + ' <span>/ bulan</span></p>' +
+            '</div>' + (st.key === "lunas" ? "" : '<span class="badge badge-' + st.key + '">' + esc(st.label) + "</span>") + "</div>" +
+            (chips ? '<div class="facility-row">' + chips + '</div>' : "") +
+            tenantHtml +
+            '<div class="due-row">' + ICON_CAL + '<span>Jatuh tempo tiap tgl ' + r.dueDay + '</span></div>' +
+            '<div class="room-actions">' + actions + '</div>' +
+          '</article>';
+        }).join("");
+      }
+
+      /* ================= Render: pembayaran ================= */
+      function renderPayments() {
+        var sel = document.getElementById("payFilter");
+        var months = {};
+        state.payments.forEach(function (p) { months[p.month] = true; });
+        var keys = Object.keys(months).sort().reverse();
+        var opts = '<option value="all">Semua bulan</option>' + keys.map(function (k) {
+          var p = k.split("-");
+          return '<option value="' + k + '">' + MONTH_NAMES[parseInt(p[1], 10) - 1] + " " + p[0] + "</option>";
+        }).join("");
+        sel.innerHTML = opts;
+        if (view.payFilter !== "all" && keys.indexOf(view.payFilter) === -1) view.payFilter = "all";
+        sel.value = view.payFilter;
+
+        var list = state.payments.filter(function (p) {
+          return view.payFilter === "all" || p.month === view.payFilter;
+        }).sort(function (a, b) {
+          if (a.payDate !== b.payDate) return a.payDate < b.payDate ? 1 : -1;
+          return a.month < b.month ? 1 : -1;
+        });
+        var wrap = document.getElementById("payListWrap");
+        if (!list.length) {
+          wrap.innerHTML = '<div class="empty-state"><p class="e-title">Belum ada pembayaran</p>' +
+            '<p class="e-sub">Pembayaran akan muncul di sini setelah Anda menandai kamar sebagai lunas.</p></div>';
+        } else {
+          wrap.innerHTML = '<div class="list-card">' + list.map(function (p) {
+            var r = roomById(p.roomId);
+            var mp = p.month.split("-");
+            var tenantName = r && r.tenant ? r.tenant.name : (p.tenantName || "Penghuni sebelumnya");
+            return '<div class="list-row"><div class="list-main">' +
+              '<p class="list-title">Kamar ' + esc(r ? r.number : "?") + " · " + esc(tenantName) + '</p>' +
+              '<p class="list-sub">' + MONTH_NAMES[parseInt(mp[1], 10) - 1] + " " + mp[0] + " · dibayar " + fmtDateID(p.payDate) + '</p>' +
+              '</div><span class="method-tag">' + esc(p.method) + '</span>' +
+              '<span class="list-amount">' + fmtRp(p.amount) + "</span></div>";
+          }).join("") + "</div>";
+        }
+        var total = list.reduce(function (s, p) { return s + p.amount; }, 0);
+        document.getElementById("payTotalLabel").textContent =
+          view.payFilter === "all" ? "Total semua pembayaran" : "Total " + sel.options[sel.selectedIndex].textContent;
+        document.getElementById("payTotalValue").textContent = fmtRp(total);
+      }
+
+      /* ================= Render: pengeluaran ================= */
+      function renderExpenses() {
+        var mk = monthKey(view.y, view.m);
+        document.getElementById("expMonthSub").textContent = "Catatan untuk " + MONTH_NAMES[view.m] + " " + view.y;
+        var list = expensesInMonth(mk);
+        var wrap = document.getElementById("expListWrap");
+        if (!list.length) {
+          wrap.innerHTML = '<div class="empty-state"><p class="e-title">Belum ada pengeluaran</p>' +
+            '<p class="e-sub">Pengeluaran bulan ini akan tercatat di sini, misalnya token listrik, PDAM, dan internet.</p></div>';
+        } else {
+          wrap.innerHTML = '<div class="list-card">' + list.map(function (e) {
+            return '<div class="list-row"><div class="list-main">' +
+              '<p class="list-title">' + esc(e.category) + " · " + esc(e.note) + '</p>' +
+              '<p class="list-sub">' + fmtDateID(e.date) + '</p></div>' +
+              '<span class="list-amount out">-' + fmtRp(e.amount) + '</span>' +
+              '<button class="icon-btn" type="button" data-act="del-exp" data-id="' + e.id + '" aria-label="Hapus pengeluaran">' +
+              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+              "</button></div>";
+          }).join("") + "</div>";
+        }
+        var totalOut = expenseOfMonth(mk);
+        document.getElementById("expTotalLabel").textContent = "Total pengeluaran " + MONTH_NAMES[view.m];
+        document.getElementById("expTotalValue").textContent = fmtRp(totalOut);
+        var net = incomeOfMonth(mk) - totalOut;
+        document.getElementById("netLine").innerHTML =
+          "Pemasukan bersih bulan ini: <strong>" + fmtRp(net) + "</strong>";
+        // Tanggal default form mengikuti bulan yang sedang dilihat
+        var dateInput = document.getElementById("expDate");
+        if (!dateInput.value) {
+          var t = todayLocal();
+          dateInput.value = (view.y === t.y && view.m === t.m) ? todayISO() : monthKey(view.y, view.m) + "-01";
+        }
+      }
+
+      /* ================= Render: pengingat ================= */
+      function renderReminders() {
+        var mk = monthKey(view.y, view.m);
+        var unpaid = occupiedRooms().filter(function (r) { return !paymentFor(r.id, mk); });
+        document.getElementById("remindSub").textContent =
+          "Untuk " + MONTH_NAMES[view.m] + " " + view.y + " · " + unpaid.length + " penghuni belum lunas";
+        var wrap = document.getElementById("remindList");
+        if (!unpaid.length) {
+          wrap.innerHTML = '<div class="empty-state"><p class="e-title">Semua sudah lunas bulan ini. Tidak ada yang perlu ditagih.</p>' +
+            '<p class="e-sub">Kerja bagus — semua penghuni sudah membayar untuk ' + MONTH_NAMES[view.m] + " " + view.y + ".</p></div>";
+          return;
+        }
+        wrap.innerHTML = unpaid.map(function (r) {
+          var st = roomStatus(r, view.y, view.m);
+          var msg = reminderMessage(r, view.y, view.m);
+          var waLink = "https://wa.me/" + encodeURIComponent(r.tenant.wa) + "?text=" + encodeURIComponent(msg);
+          return '<article class="remind-card">' +
+            '<div class="remind-head"><div>' +
+              '<p class="remind-name">' + esc(r.tenant.name) + '</p>' +
+              '<p class="remind-room">Kamar ' + esc(r.number) + " · " + fmtRp(r.price) + '</p>' +
+            '</div><span class="badge badge-' + st.key + '">' + esc(st.label) + "</span></div>" +
+            '<p class="remind-msg">' + esc(msg) + "</p>" +
+            '<div class="remind-actions">' +
+              '<button class="btn-small" type="button" data-act="copy" data-id="' + r.id + '">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+                "Salin Pesan</button>" +
+              '<a class="btn-wa" href="' + waLink + '" target="_blank" rel="noopener">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>' +
+                "Buka WhatsApp</a>" +
+            "</div></article>";
+        }).join("");
+      }
+
+      function renderAll() {
+        renderHeader();
+        renderDashboard();
+        renderRooms();
+        renderPayments();
+        renderExpenses();
+        renderReminders();
+      }
+
+      /* ================= Tabs ================= */
+      function switchTab(tab) {
+        view.tab = tab;
+        document.querySelectorAll(".nav-item").forEach(function (b) {
+          b.classList.toggle("active", b.dataset.tab === tab);
+        });
+        document.querySelectorAll(".tab-panel").forEach(function (p) {
+          p.classList.toggle("active", p.id === "panel-" + tab);
+        });
+      }
+      document.querySelectorAll(".nav-item").forEach(function (b) {
+        b.addEventListener("click", function () { switchTab(b.dataset.tab); });
+      });
+
+      /* ================= Navigasi bulan ================= */
+      function shiftMonth(delta) {
+        var d = new Date(view.y, view.m + delta, 1);
+        view.y = d.getFullYear(); view.m = d.getMonth();
+        view.payFilter = monthKey(view.y, view.m);
+        document.getElementById("expDate").value = "";
+        renderAll();
+      }
+      document.getElementById("btnPrevMonth").addEventListener("click", function () { shiftMonth(-1); });
+      document.getElementById("btnNextMonth").addEventListener("click", function () { shiftMonth(1); });
+
+      /* ================= Aksi kamar ================= */
+      function markPaidFlow(room) {
+        var mk = monthKey(view.y, view.m);
+        openModal(
+          '<h3 class="modal-title">Tandai Lunas — Kamar ' + esc(room.number) + '</h3>' +
+          '<p class="modal-sub">' + esc(room.tenant.name) + " membayar " + fmtRp(room.price) +
+          " untuk " + MONTH_NAMES[view.m] + " " + view.y + ". Pilih metode pembayaran:</p>" +
+          '<div class="method-list">' +
+            METHODS.map(function (mm) {
+              return '<button class="method-btn" type="button" data-method="' + mm + '">' +
+                '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg>' +
+                mm + "</button>";
+            }).join("") +
+          '</div>' +
+          '<div class="modal-actions"><button class="btn-ghost" type="button" id="mCancel">Batal</button></div>'
+        );
+        document.getElementById("mCancel").addEventListener("click", closeModal);
+        sheet.querySelectorAll("[data-method]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            state.payments.push({
+              id: uid(), roomId: room.id, month: mk, amount: room.price,
+              payDate: todayISO(), method: btn.dataset.method, tenantName: room.tenant.name
+            });
+            state.isSample = false;
+            save();
+            closeModal();
+            lastStampRoomId = room.id;
+            renderAll();
+            var occ = occupiedRooms();
+            var allPaid = occ.length > 0 && occ.every(function (r) { return !!paymentFor(r.id, mk); });
+            if (allPaid && !confettiDoneFor[mk]) {
+              confettiDoneFor[mk] = true;
+              fireConfetti();
+              toast("Semua kamar sudah lunas bulan ini");
+            } else {
+              toast("Kamar " + room.number + " ditandai lunas");
+            }
+            setTimeout(function () { lastStampRoomId = null; }, 600);
+          });
+        });
+      }
+
+      function tenantFormModal(room) {
+        openModal(
+          '<h3 class="modal-title">Isi Penghuni — Kamar ' + esc(room.number) + '</h3>' +
+          '<p class="modal-sub">Penghuni baru untuk kamar seharga ' + fmtRp(room.price) + ' per bulan.</p>' +
+          '<form id="tenantForm" novalidate>' +
+            '<div class="field" id="tfNameWrap"><label for="tfName">Nama penghuni</label>' +
+              '<input type="text" id="tfName" placeholder="cth: Rina Maharani" maxlength="60" />' +
+              '<p class="err">Nama wajib diisi.</p></div>' +
+            '<div class="field" id="tfWaWrap"><label for="tfWa">Nomor WhatsApp</label>' +
+              '<input type="tel" id="tfWa" inputmode="numeric" placeholder="cth: 6281234567890" maxlength="16" />' +
+              '<p class="hint">Hanya angka, diawali kode negara (62).</p>' +
+              '<p class="err">Nomor WA wajib diisi dan hanya boleh berisi angka.</p></div>' +
+            '<div class="modal-actions">' +
+              '<button class="btn-ghost" type="button" id="mCancel">Batal</button>' +
+              '<button class="btn-primary" type="submit">Simpan Penghuni</button>' +
+            '</div></form>'
+        );
+        document.getElementById("mCancel").addEventListener("click", closeModal);
+        document.getElementById("tenantForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var name = document.getElementById("tfName").value.trim();
+          var wa = document.getElementById("tfWa").value.replace(/\D/g, "");
+          var ok = true;
+          document.getElementById("tfNameWrap").classList.toggle("invalid", !name);
+          if (!name) ok = false;
+          var waBad = !wa || wa.length < 9;
+          document.getElementById("tfWaWrap").classList.toggle("invalid", waBad);
+          if (waBad) ok = false;
+          if (!ok) return;
+          room.tenant = { name: name, wa: wa };
+          save(); closeModal(); renderAll();
+          toast("Penghuni Kamar " + room.number + " tersimpan");
+        });
+      }
+
+      function roomFormModal(room) {
+        var isEdit = !!room;
+        var r = room || { number: "", price: "", dueDay: 5, facilities: [] };
+        var checks = ALL_FACILITIES.map(function (f) {
+          var on = r.facilities.indexOf(f) !== -1 ? " checked" : "";
+          return '<label class="check-item"><input type="checkbox" name="fac" value="' + esc(f) + '"' + on + " />" + esc(f) + "</label>";
+        }).join("");
+        openModal(
+          '<h3 class="modal-title">' + (isEdit ? "Edit Kamar " + esc(r.number) : "Tambah Kamar") + '</h3>' +
+          '<p class="modal-sub">Isi data kamar di bawah ini.</p>' +
+          '<form id="roomForm" novalidate>' +
+            '<div class="field-row">' +
+              '<div class="field" id="rfNumWrap"><label for="rfNum">Nomor kamar</label>' +
+                '<input type="text" id="rfNum" value="' + esc(r.number) + '" placeholder="cth: 11" maxlength="6" />' +
+                '<p class="err">Nomor kamar wajib diisi dan belum dipakai.</p></div>' +
+              '<div class="field" id="rfDueWrap"><label for="rfDue">Jatuh tempo (tgl)</label>' +
+                '<input type="number" id="rfDue" min="1" max="28" value="' + r.dueDay + '" />' +
+                '<p class="err">Pilih tanggal 1–28.</p></div>' +
+            '</div>' +
+            '<div class="field" id="rfPriceWrap"><label for="rfPrice">Harga per bulan (Rp)</label>' +
+              '<input type="number" id="rfPrice" inputmode="numeric" min="1" value="' + (r.price || "") + '" placeholder="cth: 1200000" />' +
+              '<p class="err">Harga harus lebih dari 0.</p></div>' +
+            '<div class="field"><label>Fasilitas</label><div class="check-grid">' + checks + "</div></div>" +
+            '<div class="modal-actions">' +
+              '<button class="btn-ghost" type="button" id="mCancel">Batal</button>' +
+              '<button class="btn-primary" type="submit">' + (isEdit ? "Simpan Perubahan" : "Tambah Kamar") + "</button>" +
+            "</div></form>"
+        );
+        document.getElementById("mCancel").addEventListener("click", closeModal);
+        document.getElementById("roomForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var num = document.getElementById("rfNum").value.trim();
+          var price = parseInt(document.getElementById("rfPrice").value, 10);
+          var due = parseInt(document.getElementById("rfDue").value, 10);
+          var facs = [];
+          sheet.querySelectorAll('input[name="fac"]:checked').forEach(function (c) { facs.push(c.value); });
+          var dup = state.rooms.some(function (x) { return x.number === num && (!isEdit || x.id !== room.id); });
+          var ok = true;
+          document.getElementById("rfNumWrap").classList.toggle("invalid", !num || dup);
+          if (!num || dup) ok = false;
+          document.getElementById("rfPriceWrap").classList.toggle("invalid", !(price > 0));
+          if (!(price > 0)) ok = false;
+          var dueBad = !(due >= 1 && due <= 28);
+          document.getElementById("rfDueWrap").classList.toggle("invalid", dueBad);
+          if (dueBad) ok = false;
+          if (!ok) return;
+          if (isEdit) {
+            room.number = num; room.price = price; room.dueDay = due; room.facilities = facs;
+            toast("Kamar " + num + " diperbarui");
+          } else {
+            state.rooms.push({ id: uid(), number: num, price: price, dueDay: due, facilities: facs, tenant: null });
+            state.rooms.sort(function (a, b) { return a.number.localeCompare(b.number, undefined, { numeric: true }); });
+            toast("Kamar " + num + " ditambahkan");
+          }
+          save(); closeModal(); renderAll();
+        });
+      }
+
+      document.getElementById("roomList").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-act]");
+        if (!btn) return;
+        var room = roomById(btn.dataset.id);
+        if (!room) return;
+        var act = btn.dataset.act;
+        if (act === "pay") markPaidFlow(room);
+        else if (act === "unpay") {
+          var mk = monthKey(view.y, view.m);
+          confirmModal("Batalkan status lunas?",
+            "Pembayaran Kamar " + room.number + " untuk " + MONTH_NAMES[view.m] + " " + view.y + " akan dihapus dari riwayat.",
+            "Ya, batalkan", function () {
+              state.payments = state.payments.filter(function (p) { return !(p.roomId === room.id && p.month === mk); });
+              save(); renderAll(); toast("Status lunas Kamar " + room.number + " dibatalkan");
+            });
+        } else if (act === "fill") tenantFormModal(room);
+        else if (act === "vacate") {
+          confirmModal("Kosongkan Kamar " + room.number + "?",
+            (room.tenant ? room.tenant.name : "Penghuni") + " akan dikeluarkan dari kamar ini. Riwayat pembayaran lama tetap tersimpan.",
+            "Ya, kosongkan", function () {
+              room.tenant = null; save(); renderAll(); toast("Kamar " + room.number + " dikosongkan");
+            });
+        } else if (act === "edit") roomFormModal(room);
+        else if (act === "del") {
+          confirmModal("Hapus Kamar " + room.number + "?",
+            "Kamar ini beserta riwayat pembayarannya akan dihapus permanen.",
+            "Ya, hapus", function () {
+              state.rooms = state.rooms.filter(function (x) { return x.id !== room.id; });
+              state.payments = state.payments.filter(function (p) { return p.roomId !== room.id; });
+              save(); renderAll(); toast("Kamar " + room.number + " dihapus");
+            });
+        }
+      });
+      document.getElementById("btnAddRoom").addEventListener("click", function () { roomFormModal(null); });
+
+      /* ================= Aksi pembayaran ================= */
+      document.getElementById("payFilter").addEventListener("change", function (e) {
+        view.payFilter = e.target.value;
+        renderPayments();
+      });
+
+      /* ================= Aksi pengeluaran ================= */
+      document.getElementById("expForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var date = document.getElementById("expDate").value;
+        var cat = document.getElementById("expCategory").value;
+        var note = document.getElementById("expNote").value.trim();
+        var amount = parseInt(document.getElementById("expAmount").value, 10);
+        var ok = true;
+        var noteWrap = document.getElementById("expNote").closest(".field");
+        var amtWrap = document.getElementById("expAmount").closest(".field");
+        noteWrap.classList.toggle("invalid", !note);
+        if (!note) ok = false;
+        amtWrap.classList.toggle("invalid", !(amount > 0));
+        if (!(amount > 0)) ok = false;
+        if (!date) { toast("Pilih tanggal pengeluaran dulu"); return; }
+        if (!ok) return;
+        state.expenses.push({ id: uid(), date: date, category: cat, note: note, amount: amount });
+        save();
+        document.getElementById("expNote").value = "";
+        document.getElementById("expAmount").value = "";
+        var dp = date.split("-");
+        if (parseInt(dp[0], 10) !== view.y || parseInt(dp[1], 10) - 1 !== view.m) {
+          view.y = parseInt(dp[0], 10); view.m = parseInt(dp[1], 10) - 1;
+          view.payFilter = monthKey(view.y, view.m);
+          document.getElementById("expDate").value = "";
+        }
+        renderAll();
+        toast("Pengeluaran tersimpan");
+      });
+      document.getElementById("panel-pengeluaran").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-act='del-exp']");
+        if (!btn) return;
+        var exp = null;
+        state.expenses.forEach(function (x) { if (x.id === btn.dataset.id) exp = x; });
+        if (!exp) return;
+        confirmModal("Hapus pengeluaran ini?",
+          exp.category + " · " + exp.note + " sebesar " + fmtRp(exp.amount) + " akan dihapus.",
+          "Ya, hapus", function () {
+            state.expenses = state.expenses.filter(function (x) { return x.id !== exp.id; });
+            save(); renderAll(); toast("Pengeluaran dihapus");
+          });
+      });
+
+      /* ================= Aksi pengingat ================= */
+      document.getElementById("remindList").addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-act='copy']");
+        if (!btn) return;
+        var room = roomById(btn.dataset.id);
+        if (!room || !room.tenant) return;
+        var msg = reminderMessage(room, view.y, view.m);
+        function done() { toast("Pesan disalin"); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(msg).then(done, function () { fallbackCopy(msg); done(); });
+        } else { fallbackCopy(msg); done(); }
+      });
+      function fallbackCopy(text) {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* abaikan */ }
+        document.body.removeChild(ta);
+      }
+
+      /* ================= Edit kost & pengaturan data ================= */
+      document.getElementById("btnEditKost").addEventListener("click", function () {
+        openModal(
+          '<h3 class="modal-title">Edit Info Kost</h3>' +
+          '<p class="modal-sub">Nama dan alamat kost tampil di bagian atas aplikasi dan di pesan tagihan.</p>' +
+          '<form id="kostForm" novalidate>' +
+            '<div class="field" id="kfNameWrap"><label for="kfName">Nama kost</label>' +
+              '<input type="text" id="kfName" value="' + esc(state.kostName) + '" maxlength="40" />' +
+              '<p class="err">Nama kost wajib diisi.</p></div>' +
+            '<div class="field"><label for="kfAddr">Alamat / kota</label>' +
+              '<input type="text" id="kfAddr" value="' + esc(state.address) + '" maxlength="60" /></div>' +
+            '<div class="modal-actions">' +
+              '<button class="btn-ghost" type="button" id="mCancel">Batal</button>' +
+              '<button class="btn-primary" type="submit">Simpan</button>' +
+            "</div></form>"
+        );
+        document.getElementById("mCancel").addEventListener("click", closeModal);
+        document.getElementById("kostForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var name = document.getElementById("kfName").value.trim();
+          document.getElementById("kfNameWrap").classList.toggle("invalid", !name);
+          if (!name) return;
+          state.kostName = name;
+          state.address = document.getElementById("kfAddr").value.trim() || state.address;
+          save(); closeModal(); renderAll(); toast("Info kost diperbarui");
+        });
+      });
+
+      document.getElementById("btnLoadSample").addEventListener("click", function () {
+        confirmModal("Muat data contoh?",
+          "Data saat ini akan diganti dengan data contoh Kost Mawar (10 kamar beserta riwayatnya).",
+          "Ya, muat contoh", function () {
+            state = sampleData(); save(); renderAll(); toast("Data contoh dimuat");
+          });
+      });
+      document.getElementById("btnReset").addEventListener("click", function () {
+        confirmModal("Mulai dari nol?",
+          "Semua kamar, pembayaran, dan pengeluaran akan dihapus. Tindakan ini tidak bisa dibatalkan.",
+          "Ya, hapus semua", function () {
+            state = emptyData(); save();
+            document.getElementById("expDate").value = "";
+            renderAll(); toast("Semua data dihapus — mulai dari nol");
+          });
+      });
+
+      /* ================= Mulai ================= */
+      load();
+      var nowT = todayLocal();
+      view.y = nowT.y; view.m = nowT.m;
+      view.payFilter = monthKey(view.y, view.m);
+      renderAll();
+      switchTab("kamar");
+    </script>
+  </body>
+</html>
